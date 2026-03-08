@@ -124,7 +124,7 @@ class OnkyoAccessory {
 		this.state = false;
 		this.m_state = false;
 		this.v_state = 0;
-		this.i_state = null;
+		this.i_state = 1; // Must not be null — HomeKit rejects null for ActiveIdentifier
 		this.interval = Number.parseInt(this.poll_status_interval, 10);
 		this.avrManufacturer = 'Onkyo';
 		this.avrSerial = this.config.serial || this.ip_address;
@@ -355,8 +355,8 @@ class OnkyoAccessory {
 			this.log.error('eventInput - ERROR - INVALID INPUT - Model does not support selected input.');
 		}
 
-		// Communicate status
-		if (this.tvService)
+		// Communicate status — guard against 0/null which HomeKit rejects for ActiveIdentifier
+		if (this.tvService && this.i_state)
 			this.tvService.getCharacteristic(Characteristic.ActiveIdentifier).updateValue(this.i_state);
 	}
 
@@ -721,9 +721,10 @@ class OnkyoAccessory {
 				this.log.error('getInputState - INPUT QRY: ERROR - current i_state: %s', this.i_state);
 			}
 		});
-		callback(null, this.i_state);
-		// Communicate status
-		if (this.tvService)
+		// Guard against null — HomeKit rejects null for ActiveIdentifier
+		callback(null, this.i_state !== null && this.i_state !== undefined ? this.i_state : 1);
+		// Communicate status — guard against null/0 which HomeKit rejects for ActiveIdentifier
+		if (this.tvService && this.i_state)
 			this.tvService.getCharacteristic(Characteristic.ActiveIdentifier).updateValue(this.i_state);
 	}
 
@@ -756,8 +757,8 @@ class OnkyoAccessory {
 				this.log.error('setInputState - INPUT : ERROR - current i_state:%s - Source:%s', this.i_state, source.toString());
 		});
 
-		// Communicate status
-		if (this.tvService)
+		// Communicate status — guard against null/0 which HomeKit rejects for ActiveIdentifier
+		if (this.tvService && this.i_state)
 			this.tvService.getCharacteristic(Characteristic.ActiveIdentifier).updateValue(this.i_state);
 	}
 
@@ -955,5 +956,7 @@ class OnkyoAccessory {
 
 module.exports = homebridge => {
   ({Service, Characteristic} = homebridge.hap);
+  // Compatible with Homebridge v1.6+ and v2.x
+  // Also update package.json engines: { "homebridge": ">=1.6.0" }
   homebridge.registerPlatform('homebridge-onkyo', 'Onkyo', OnkyoPlatform);
 };
