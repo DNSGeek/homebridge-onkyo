@@ -29,8 +29,8 @@ class OnkyoPlatform {
     platform.numberReceivers = platform.receivers.length;
     platform.log.debug("Creating %s receivers...", platform.numberReceivers);
     if (platform.numberReceivers === 0) return;
-    receivers.forEach((receiver) => {
-      // eslint-disable-line unicorn/no-array-for-each
+    for (const receiver of receivers) {
+       
       if (!this.connections[receiver.ip_address]) {
         platform.log.debug(
           "Creating new connection for ip %s",
@@ -45,7 +45,7 @@ class OnkyoPlatform {
       }
 
       const accessory = new OnkyoAccessory(platform, receiver); // eslint-disable-line no-unused-vars
-    });
+    }
   }
 }
 
@@ -82,7 +82,7 @@ class OnkyoAccessory {
 
     if (this.config.volume_type === undefined) {
       this.log.error(
-        'ERROR: Your configuration is missing the parameter "volume_type". Assuming "none".',
+        "ERROR: Your configuration is missing the parameter \"volume_type\". Assuming \"none\".",
       );
       this.volume_type = "none";
     } else {
@@ -92,7 +92,7 @@ class OnkyoAccessory {
 
     if (this.config.filter_inputs === undefined) {
       this.log.error(
-        'ERROR: Your configuration is missing the parameter "filter_inputs". Assuming "false".',
+        "ERROR: Your configuration is missing the parameter \"filter_inputs\". Assuming \"false\".",
       );
       this.filter_inputs = false;
     } else {
@@ -102,13 +102,13 @@ class OnkyoAccessory {
 
     this.inputs = this.config.inputs;
 
-    this.cmdMap = new Array(2);
-    this.cmdMap.main = new Array(4);
+    this.cmdMap = Array.from({length: 2});
+    this.cmdMap.main = Array.from({length: 4});
     this.cmdMap.main.power = "system-power";
     this.cmdMap.main.volume = "master-volume";
     this.cmdMap.main.muting = "audio-muting";
     this.cmdMap.main.input = "input-selector";
-    this.cmdMap.zone2 = new Array(4);
+    this.cmdMap.zone2 = Array.from({length: 4});
     this.cmdMap.zone2.power = "power";
     this.cmdMap.zone2.volume = "volume";
     this.cmdMap.zone2.muting = "muting";
@@ -182,7 +182,7 @@ class OnkyoAccessory {
       this.name,
       this.UUID,
       this.platform.api.hap.Accessory.Categories.AUDIO_RECEIVER,
-    ); // eslint-disable-line new-cap
+    );  
 
     this.createAccessoryInformationService(this.accessory);
     this.tvService = this.createTvService(this.accessory);
@@ -208,15 +208,15 @@ class OnkyoAccessory {
     let set;
     /* eslint guard-for-in: "off" */
     for (set in eiscpDataAll.modelsets) {
-      eiscpDataAll.modelsets[set].forEach((model) => {
+      for (const model of eiscpDataAll.modelsets[set]) 
         if (model.includes(this.model)) inSets.push(set);
-      });
+      
     }
 
     // Get list of commands from eiscpData
     const eiscpData = eiscpDataAll.commands.main.SLI.values;
     // Create a JSON object for inputs from the eiscpData
-    let newobj = '{ "Inputs" : [';
+    let newobj = "{ \"Inputs\" : [";
     let exkey;
     for (exkey in eiscpData) {
       let hold = eiscpData[exkey].name.toString();
@@ -244,9 +244,9 @@ class OnkyoAccessory {
       }
 
       if (inSets.includes(set))
-        newobj =
-          newobj + '{ "code":"' + exkey + '" , "label":"' + hold + '" },';
-      else continue;
+        {newobj =
+          newobj + "{ \"code\":\"" + exkey + "\" , \"label\":\"" + hold + "\" },";}
+      else {continue;}
     }
 
     // Drop last comma first
@@ -393,9 +393,9 @@ class OnkyoAccessory {
     );
     // Communicate status
     if (this.tvService)
-      this.tvService
+      {this.tvService
         .getCharacteristic(Characteristic.Active)
-        .updateValue(this.state);
+        .updateValue(this.state);}
     // if (this.volume_dimmer) {
     // 	this.m_state = !(response == 'on');
     // 	this.dimmer.getCharacteristic(Characteristic.On).updateValue((response == 'on'), null, 'power event m_status');
@@ -411,9 +411,9 @@ class OnkyoAccessory {
     );
     // Communicate status
     if (this.tvService)
-      this.tvService
+      {this.tvService
         .getCharacteristic(Characteristic.Mute)
-        .updateValue(this.m_state, null, "m_statuspoll");
+        .updateValue(this.m_state, null, "m_statuspoll");}
   }
 
   eventInput(response) {
@@ -424,7 +424,7 @@ class OnkyoAccessory {
 
       // Convert to i_state input code
       const index =
-        input !== null // eslint-disable-line no-negated-condition
+        input !== null  
           ? RxInputs.Inputs.findIndex((i) => i.label === input)
           : -1;
       if (this.i_state !== index + 1)
@@ -448,9 +448,9 @@ class OnkyoAccessory {
 
     // Communicate status — guard against 0/null which HomeKit rejects for ActiveIdentifier
     if (this.tvService && this.i_state)
-      this.tvService
+      {this.tvService
         .getCharacteristic(Characteristic.ActiveIdentifier)
-        .updateValue(this.i_state);
+        .updateValue(this.i_state);}
   }
 
   eventVolume(response) {
@@ -474,9 +474,9 @@ class OnkyoAccessory {
 
     // Communicate status
     if (this.tvService)
-      this.tvService
+      {this.tvService
         .getCharacteristic(Characteristic.Volume)
-        .updateValue(this.v_state, null, "v_statuspoll");
+        .updateValue(this.v_state, null, "v_statuspoll");}
   }
 
   eventClose(response) {
@@ -543,10 +543,10 @@ class OnkyoAccessory {
                   this.defaultVolume,
                 function (error, _) {
                   if (error)
-                    this.log.error(
+                    {this.log.error(
                       "Error while setting default volume: %s",
                       error,
-                    );
+                    );}
                 },
               );
             }
@@ -560,15 +560,15 @@ class OnkyoAccessory {
             // Handle defaultInput being either a custom label or manufacturer label
             let label = this.defaultInput;
             if (this.inputs) {
-              this.inputs.forEach((input, _) => {
+              for (const [_, input] of this.inputs.entries()) {
                 if (input.input_name === this.default) label = input.input_name;
                 else if (input.display_name === this.defaultInput)
                   label = input.display_name;
-              });
+              }
             }
 
             const index =
-              label !== null // eslint-disable-line no-negated-condition
+              label !== null  
                 ? RxInputs.Inputs.findIndex((i) => i.label === label)
                 : -1;
             this.i_state = index + 1;
@@ -579,10 +579,10 @@ class OnkyoAccessory {
                 this.zone + "." + this.cmdMap[this.zone].input + "=" + label,
                 function (error, _) {
                   if (error)
-                    this.log.error(
+                    {this.log.error(
                       "Error while setting default input: %s",
                       error,
-                    );
+                    );}
                 },
               );
             }
@@ -704,9 +704,9 @@ class OnkyoAccessory {
 
     // Communicate status
     if (this.tvService)
-      this.tvSpeakerService
+      {this.tvSpeakerService
         .getCharacteristic(Characteristic.Volume)
-        .updateValue(this.v_state);
+        .updateValue(this.v_state);}
   }
 
   setVolumeState(volumeLvl, callback, context) {
@@ -773,9 +773,9 @@ class OnkyoAccessory {
 
     // Communicate status
     if (this.tvService)
-      this.tvSpeakerService
+      {this.tvSpeakerService
         .getCharacteristic(Characteristic.Volume)
-        .updateValue(this.v_state);
+        .updateValue(this.v_state);}
   }
 
   setVolumeRelative(volumeDirection, callback, context) {
@@ -836,9 +836,9 @@ class OnkyoAccessory {
 
     // Communicate status
     if (this.tvService)
-      this.tvSpeakerService
+      {this.tvSpeakerService
         .getCharacteristic(Characteristic.Volume)
-        .updateValue(this.v_state);
+        .updateValue(this.v_state);}
   }
 
   getMuteState(callback, context) {
@@ -883,9 +883,9 @@ class OnkyoAccessory {
 
     // Communicate status
     if (this.tvService)
-      this.tvSpeakerService
+      {this.tvSpeakerService
         .getCharacteristic(Characteristic.Mute)
-        .updateValue(this.m_state);
+        .updateValue(this.m_state);}
   }
 
   setMuteState(muteOn, callback, context) {
@@ -949,9 +949,9 @@ class OnkyoAccessory {
 
     // Communicate status
     if (this.tvService)
-      this.tvSpeakerService
+      {this.tvSpeakerService
         .getCharacteristic(Characteristic.Mute)
-        .updateValue(this.m_state);
+        .updateValue(this.m_state);}
   }
 
   getInputSource(callback, context) {
@@ -1000,9 +1000,9 @@ class OnkyoAccessory {
     );
     // Communicate status — guard against null/0 which HomeKit rejects for ActiveIdentifier
     if (this.tvService && this.i_state)
-      this.tvService
+      {this.tvService
         .getCharacteristic(Characteristic.ActiveIdentifier)
-        .updateValue(this.i_state);
+        .updateValue(this.i_state);}
   }
 
   setInputSource(source, callback, context) {
@@ -1040,19 +1040,19 @@ class OnkyoAccessory {
       this.zone + "." + this.cmdMap[this.zone].input + ":" + label,
       (error, _) => {
         if (error)
-          this.log.error(
+          {this.log.error(
             "setInputState - INPUT : ERROR - current i_state:%s - Source:%s",
             this.i_state,
             source.toString(),
-          );
+          );}
       },
     );
 
     // Communicate status — guard against null/0 which HomeKit rejects for ActiveIdentifier
     if (this.tvService && this.i_state)
-      this.tvService
+      {this.tvService
         .getCharacteristic(Characteristic.ActiveIdentifier)
-        .updateValue(this.i_state);
+        .updateValue(this.i_state);}
   }
 
   remoteKeyPress(button, callback) {
@@ -1102,9 +1102,9 @@ class OnkyoAccessory {
       const hapId = index + 1;
       let inputName = i.label;
       if (this.inputs) {
-        this.inputs.forEach((input, _) => {
+        for (const [_, input] of this.inputs.entries()) 
           if (input.input_name === i.label) inputName = input.display_name;
-        });
+        
       }
 
       const input = this.setupInput(i.code, inputName, hapId, service);

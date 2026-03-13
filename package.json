@@ -1,27 +1,25 @@
 {
   "name": "homebridge-onkyo",
-  "version": "2026.3.12",
+  "version": "2026.3.13",
   "description": "Homebridge plugin for Onkyo Receivers",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "pretest": "eslint --ignore-path .gitignore package.json config.schema.json",
-    "test": "xo"
+    "test": "eslint ."
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ToddGreenfield/homebridge-onkyo.git"
+    "url": "git+https://github.com/DNSGeek/homebridge-onkyo.git"
   },
   "dependencies": {
-    "polling-to-event": "^2.1.0",
-    "async": "*",
-    "js-yaml": "*"
+    "async": "^3.2.6",
+    "js-yaml": "^4.1.1",
+    "polling-to-event": "^2.1.0"
   },
   "devDependencies": {
-    "eslint": ">=7.30.0",
-    "eslint-plugin-ava": "^13.2.0",
-    "eslint-plugin-unicorn": "latest",
-    "eslint-plugin-json": "^3.0.0",
-    "xo": ">=0.47.0"
+    "eslint": "^9.39.4",
+    "eslint-plugin-json": "^4.0.1",
+    "eslint-plugin-unicorn": "^56.0.0"
   },
   "keywords": [
     "homebridge-plugin",
@@ -31,7 +29,7 @@
   ],
   "engines": {
     "homebridge": "^1.6.0 || ^2.0.0-beta.0",
-    "node": "^18.20.4 || ^20.15.1 || ^22 || ^24"
+    "node": "^18.20.4 || ^20.15.1 || ^22 || ^24 || ^25"
   },
   "author": "gw-wiscon <gw.wiscon@gmail.com>",
   "license": "ISC",
@@ -47,7 +45,6 @@
       "unicorn/no-new-array": "warn",
       "unicorn/no-array-for-each": "warn",
       "camelcase": "off",
-      "kebabCase": "off",
       "no-mixed-spaces-and-tabs": "warn",
       "no-useless-escape": "warn",
       "indent": "off",
