@@ -1,6 +1,6 @@
 {
   "name": "homebridge-onkyo",
-  "version": "2026.3.13",
+  "version": "2026.3.14",
   "description": "Homebridge plugin for Onkyo Receivers",
   "main": "index.js",
   "scripts": {
@@ -36,42 +36,4 @@
     "url": "https://github.com/DNSGeek/homebridge-onkyo/issues"
   },
   "homepage": "https://github.com/DNSGeek/homebridge-onkyo#readme",
-  "xo": {
-    "space": false,
-    "ignores": "eiscp",
-    "rules": {
-      "unicorn/prefer-module": "warn",
-      "unicorn/no-new-array": "warn",
-      "unicorn/no-array-for-each": "warn",
-      "camelcase": "off",
-      "no-mixed-spaces-and-tabs": "warn",
-      "no-useless-escape": "warn",
-      "indent": "off",
-      "quotes": "warn",
-      "capitalized-comments": "off",
-      "no-var": "warn",
-      "prefer-destructuring": "off",
-      "prefer-arrow-callback": "warn",
-      "object-shorthand": [
-        "off",
-        "always",
-        {
-          "ignoreConstructors": true
-        }
-      ],
-      "quote-props": "error",
-      "no-unused-vars": "warn",
-      "curly": [
-        "error",
-        "multi-or-nest",
-        "consistent"
-      ],
-      "no-use-before-define": [
-        "error",
-        {
-          "classes": false
-        }
-      ]
-    }
-  }
-}
+
