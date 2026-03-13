@@ -33,40 +33,26 @@ function in_modelsets(set) {
 
 function eiscp_packet(data) {
   /*
-      Wraps command or iscp message in eISCP packet for communicating over Ethernet
-      type is device type where 1 is receiver and x is for the discovery broadcast
-      Returns complete eISCP packet as a buffer ready to be sent
-    */
-  var iscp_msg, header;
+   * Wraps command or ISCP message in eISCP packet for communicating over Ethernet.
+   * Type is device type where 1 is receiver and x is for the discovery broadcast.
+   * Returns complete eISCP packet as a Buffer ready to be sent.
+   */
 
   // Add ISCP header if not already present
   if (data.charAt(0) !== "!") {
     data = "!1" + data;
   }
-  // ISCP message
-  iscp_msg = new Buffer(data + "\x0D\x0a");
 
-  // eISCP header
-  header = new Buffer([
-    73,
-    83,
-    67,
-    80, // magic
-    0,
-    0,
-    0,
-    16, // header size
-    0,
-    0,
-    0,
-    0, // data size
-    1, // version
-    0,
-    0,
-    0, // reserved
-  ]);
-  // write data size to eISCP header
-  header.writeUInt32BE(iscp_msg.length, 8);
+  // ISCP message (CR+LF terminated)
+  const iscp_msg = Buffer.from(data + "\r\n");
+
+  // eISCP header (16 bytes)
+  const header = Buffer.alloc(16);
+  header.write("ISCP", 0, "ascii");       // magic: 4 bytes
+  header.writeUInt32BE(16, 4);            // header size: always 16
+  header.writeUInt32BE(iscp_msg.length, 8); // data size
+  header.writeUInt8(1, 12);              // version: 1
+  // bytes 13-15 are reserved, remain 0
 
   return Buffer.concat([header, iscp_msg]);
 }
