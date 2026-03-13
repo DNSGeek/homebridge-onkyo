@@ -48,10 +48,10 @@ function eiscp_packet(data) {
 
   // eISCP header (16 bytes)
   const header = Buffer.alloc(16);
-  header.write("ISCP", 0, "ascii");       // magic: 4 bytes
-  header.writeUInt32BE(16, 4);            // header size: always 16
+  header.write("ISCP", 0, "ascii"); // magic: 4 bytes
+  header.writeUInt32BE(16, 4); // header size: always 16
   header.writeUInt32BE(iscp_msg.length, 8); // data size
-  header.writeUInt8(1, 12);              // version: 1
+  header.writeUInt8(1, 12); // version: 1
   // bytes 13-15 are reserved, remain 0
 
   return Buffer.concat([header, iscp_msg]);
