@@ -3,7 +3,6 @@
   "version": "2026.3.13",
   "description": "Homebridge plugin for Onkyo Receivers",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "test": "eslint ."
   },
@@ -34,9 +33,9 @@
   "author": "gw-wiscon <gw.wiscon@gmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/ToddGreenfield/homebridge-onkyo/issues"
+    "url": "https://github.com/DNSGeek/homebridge-onkyo/issues"
   },
-  "homepage": "https://github.com/ToddGreenfield/homebridge-onkyo#readme",
+  "homepage": "https://github.com/DNSGeek/homebridge-onkyo#readme",
   "xo": {
     "space": false,
     "ignores": "eiscp",
