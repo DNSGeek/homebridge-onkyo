@@ -180,7 +180,7 @@ class OnkyoAccessory {
     this.accessory = new this.platform.api.platformAccessory(
       this.name,
       this.UUID,
-      this.platform.api.hap.Accessory.Categories.AUDIO_RECEIVER,
+      this.platform.api.hap.Categories.AUDIO_RECEIVER,
     );
 
     this.createAccessoryInformationService(this.accessory);
