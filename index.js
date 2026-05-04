@@ -2,6 +2,7 @@
 
 let Service;
 let Characteristic;
+let Perms;
 let RxInputs;
 const pollingtoevent = require("polling-to-event");
 const info = require("./package.json");
@@ -1144,7 +1145,7 @@ class OnkyoAccessory {
       .setCharacteristic(Characteristic.InputSourceType, inputSourceType);
 
     input.getCharacteristic(Characteristic.ConfiguredName).setProps({
-      perms: [Characteristic.Perms.READ],
+      perms: [Perms.READ],
     });
 
     television.addLinkedService(input);
@@ -1230,7 +1231,7 @@ class OnkyoAccessory {
       .getCharacteristic(Characteristic.ConfiguredName)
       .setValue(this.name)
       .setProps({
-        perms: [Characteristic.Perms.READ],
+        perms: [Perms.READ],
       });
 
     tvService.setCharacteristic(
@@ -1284,7 +1285,7 @@ class OnkyoAccessory {
 }
 
 module.exports = (homebridge) => {
-  ({ Service, Characteristic } = homebridge.hap);
+  ({ Service, Characteristic, Perms } = homebridge.hap);
   // Compatible with Homebridge v1.6+ and v2.x
   // Also update package.json engines: { "homebridge": ">=1.6.0" }
   homebridge.registerPlatform("homebridge-onkyo", "Onkyo", OnkyoPlatform);
