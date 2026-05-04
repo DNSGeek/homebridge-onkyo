@@ -2,9 +2,21 @@
 
 let Service;
 let Characteristic;
+let Perms;
 let RxInputs;
 const pollingtoevent = require("polling-to-event");
 const info = require("./package.json");
+
+// Adapt legacy (callback, context) handlers to the onGet/onSet Promise API.
+const promisifyGet = (method) => () =>
+  new Promise((resolve, reject) => {
+    method((err, value) => (err ? reject(err) : resolve(value)));
+  });
+
+const promisifySet = (method) => (value) =>
+  new Promise((resolve, reject) => {
+    method(value, (err) => (err ? reject(err) : resolve()));
+  });
 
 class OnkyoPlatform {
   constructor(log, config, api) {
@@ -22,7 +34,9 @@ class OnkyoPlatform {
       this.receivers = "";
     }
 
-    this.createAccessories(this, this.receivers);
+    this.api.on("didFinishLaunching", () => {
+      this.createAccessories(this, this.receivers);
+    });
   }
 
   createAccessories(platform, receivers) {
@@ -378,7 +392,6 @@ class OnkyoAccessory {
 
   eventConnect(response) {
     this.log.debug("eventConnect: %s", response);
-    this.reachable = true;
   }
 
   eventSystemPower(response) {
@@ -485,7 +498,6 @@ class OnkyoAccessory {
 
   eventClose(response) {
     this.log.debug("eventClose: %s", response);
-    this.reachable = false;
   }
 
   /// /////////////////////
@@ -1144,7 +1156,7 @@ class OnkyoAccessory {
       .setCharacteristic(Characteristic.InputSourceType, inputSourceType);
 
     input.getCharacteristic(Characteristic.ConfiguredName).setProps({
-      perms: [Characteristic.Perms.READ],
+      perms: [Perms.READ],
     });
 
     television.addLinkedService(input);
@@ -1176,21 +1188,26 @@ class OnkyoAccessory {
       this.dimmer
         .getCharacteristic(Characteristic.On)
         // Inverted logic taken from https://github.com/langovoi/homebridge-upnp
-        .on("get", (callback) => {
-          this.getMuteState((error, value) => {
-            if (error) {
-              callback(error);
-              return;
-            }
-
-            callback(null, !value);
-          });
-        })
-        .on("set", (value, callback) => this.setMuteState(!value, callback));
+        .onGet(
+          () =>
+            new Promise((resolve, reject) => {
+              this.getMuteState((error, value) =>
+                error ? reject(error) : resolve(!value),
+              );
+            }),
+        )
+        .onSet(
+          (value) =>
+            new Promise((resolve, reject) => {
+              this.setMuteState(!value, (error) =>
+                error ? reject(error) : resolve(),
+              );
+            }),
+        );
       this.dimmer
         .addCharacteristic(Characteristic.Brightness)
-        .on("get", this.getVolumeState.bind(this))
-        .on("set", this.setVolumeState.bind(this));
+        .onGet(promisifyGet(this.getVolumeState.bind(this)))
+        .onSet(promisifySet(this.setVolumeState.bind(this)));
 
       service.addLinkedService(this.dimmer);
     } else if (this.volume_type === "speed") {
@@ -1202,21 +1219,26 @@ class OnkyoAccessory {
       this.speed
         .getCharacteristic(Characteristic.On)
         // Inverted logic taken from https://github.com/langovoi/homebridge-upnp
-        .on("get", (callback) => {
-          this.getMuteState((error, value) => {
-            if (error) {
-              callback(error);
-              return;
-            }
-
-            callback(null, !value);
-          });
-        })
-        .on("set", (value, callback) => this.setMuteState(!value, callback));
+        .onGet(
+          () =>
+            new Promise((resolve, reject) => {
+              this.getMuteState((error, value) =>
+                error ? reject(error) : resolve(!value),
+              );
+            }),
+        )
+        .onSet(
+          (value) =>
+            new Promise((resolve, reject) => {
+              this.setMuteState(!value, (error) =>
+                error ? reject(error) : resolve(),
+              );
+            }),
+        );
       this.speed
         .addCharacteristic(Characteristic.RotationSpeed)
-        .on("get", this.getVolumeState.bind(this))
-        .on("set", this.setVolumeState.bind(this));
+        .onGet(promisifyGet(this.getVolumeState.bind(this)))
+        .onSet(promisifySet(this.setVolumeState.bind(this)));
 
       service.addLinkedService(this.speed);
     }
@@ -1230,7 +1252,7 @@ class OnkyoAccessory {
       .getCharacteristic(Characteristic.ConfiguredName)
       .setValue(this.name)
       .setProps({
-        perms: [Characteristic.Perms.READ],
+        perms: [Perms.READ],
       });
 
     tvService.setCharacteristic(
@@ -1240,17 +1262,17 @@ class OnkyoAccessory {
 
     tvService
       .getCharacteristic(Characteristic.Active)
-      .on("get", this.getPowerState.bind(this))
-      .on("set", this.setPowerState.bind(this));
+      .onGet(promisifyGet(this.getPowerState.bind(this)))
+      .onSet(promisifySet(this.setPowerState.bind(this)));
 
     tvService
       .getCharacteristic(Characteristic.ActiveIdentifier)
-      .on("set", this.setInputSource.bind(this))
-      .on("get", this.getInputSource.bind(this));
+      .onSet(promisifySet(this.setInputSource.bind(this)))
+      .onGet(promisifyGet(this.getInputSource.bind(this)));
 
     tvService
       .getCharacteristic(Characteristic.RemoteKey)
-      .on("set", this.remoteKeyPress.bind(this));
+      .onSet(promisifySet(this.remoteKeyPress.bind(this)));
 
     return tvService;
   }
@@ -1269,22 +1291,22 @@ class OnkyoAccessory {
       );
     this.tvSpeakerService
       .getCharacteristic(Characteristic.VolumeSelector)
-      .on("set", this.setVolumeRelative.bind(this));
+      .onSet(promisifySet(this.setVolumeRelative.bind(this)));
     this.tvSpeakerService
       .getCharacteristic(Characteristic.Mute)
-      .on("get", this.getMuteState.bind(this))
-      .on("set", this.setMuteState.bind(this));
+      .onGet(promisifyGet(this.getMuteState.bind(this)))
+      .onSet(promisifySet(this.setMuteState.bind(this)));
     this.tvSpeakerService
       .addCharacteristic(Characteristic.Volume)
-      .on("get", this.getVolumeState.bind(this))
-      .on("set", this.setVolumeState.bind(this));
+      .onGet(promisifyGet(this.getVolumeState.bind(this)))
+      .onSet(promisifySet(this.setVolumeState.bind(this)));
 
     tvService.addLinkedService(this.tvSpeakerService);
   }
 }
 
 module.exports = (homebridge) => {
-  ({ Service, Characteristic } = homebridge.hap);
+  ({ Service, Characteristic, Perms } = homebridge.hap);
   // Compatible with Homebridge v1.6+ and v2.x
   // Also update package.json engines: { "homebridge": ">=1.6.0" }
   homebridge.registerPlatform("homebridge-onkyo", "Onkyo", OnkyoPlatform);
