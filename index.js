@@ -424,8 +424,8 @@ class OnkyoAccessory {
       this.m_state,
     );
     // Communicate status
-    if (this.tvService) {
-      this.tvService
+    if (this.tvSpeakerService) {
+      this.tvSpeakerService
         .getCharacteristic(Characteristic.Mute)
         .updateValue(this.m_state, null, "m_statuspoll");
     }
@@ -489,8 +489,8 @@ class OnkyoAccessory {
     }
 
     // Communicate status
-    if (this.tvService) {
-      this.tvService
+    if (this.tvSpeakerService) {
+      this.tvSpeakerService
         .getCharacteristic(Characteristic.Volume)
         .updateValue(this.v_state, null, "v_statuspoll");
     }
@@ -721,7 +721,7 @@ class OnkyoAccessory {
     );
 
     // Communicate status
-    if (this.tvService) {
+    if (this.tvSpeakerService) {
       this.tvSpeakerService
         .getCharacteristic(Characteristic.Volume)
         .updateValue(this.v_state);
@@ -791,7 +791,7 @@ class OnkyoAccessory {
     );
 
     // Communicate status
-    if (this.tvService) {
+    if (this.tvSpeakerService) {
       this.tvSpeakerService
         .getCharacteristic(Characteristic.Volume)
         .updateValue(this.v_state);
@@ -855,7 +855,7 @@ class OnkyoAccessory {
     }
 
     // Communicate status
-    if (this.tvService) {
+    if (this.tvSpeakerService) {
       this.tvSpeakerService
         .getCharacteristic(Characteristic.Volume)
         .updateValue(this.v_state);
@@ -903,7 +903,7 @@ class OnkyoAccessory {
     );
 
     // Communicate status
-    if (this.tvService) {
+    if (this.tvSpeakerService) {
       this.tvSpeakerService
         .getCharacteristic(Characteristic.Mute)
         .updateValue(this.m_state);
@@ -970,7 +970,7 @@ class OnkyoAccessory {
     }
 
     // Communicate status
-    if (this.tvService) {
+    if (this.tvSpeakerService) {
       this.tvSpeakerService
         .getCharacteristic(Characteristic.Mute)
         .updateValue(this.m_state);
