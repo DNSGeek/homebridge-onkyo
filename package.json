@@ -16,7 +16,7 @@
     "polling-to-event": "^2.1.0"
   },
   "devDependencies": {
-    "eslint": "^9.39.4",
+    "eslint": "^10.11.0",
     "eslint-plugin-json": "^5.0.0",
     "eslint-plugin-unicorn": "^76.0.0"
   },
