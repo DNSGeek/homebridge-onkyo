@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "async": "^3.2.6",
-    "js-yaml": "^4.1.1",
+    "js-yaml": "^5.4.2",
     "polling-to-event": "^2.1.0"
   },
   "devDependencies": {
