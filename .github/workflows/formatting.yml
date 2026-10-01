@@ -111,7 +111,7 @@ jobs:
           cat /tmp/c_files.txt | xargs clang-format -i --style=LLVM
       
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '20'
       
