@@ -9,7 +9,7 @@ export default [
     rules: {
       "unicorn/prefer-module": "off",
       "unicorn/no-new-array": "warn",
-      "unicorn/no-array-for-each": "warn",
+      "unicorn/no-for-each": "warn",
       camelcase: "off",
       "no-mixed-spaces-and-tabs": "warn",
       "no-useless-escape": "warn",
